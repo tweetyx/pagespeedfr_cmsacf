@@ -10,7 +10,7 @@ You can add field textarea, link, image, files in admin
 
 and get it in front with viewmodel :
 <img width="902" height="370" alt="image" src="https://github.com/user-attachments/assets/fdf71de5-b72e-45c7-807a-176fef810af6" />
-
+```
 	<?php
 	use Pagespeedfr\CmsAcf\ViewModel\AcfField;
 	
@@ -53,7 +53,7 @@ Exemple : Show all field from a tag "Category Link"
         
     </div>
 <?php endforeach; ?>
-
+```
 
 ### Installation
 
