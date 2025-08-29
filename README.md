@@ -57,7 +57,7 @@ Exemple : Show all field from a tag "Category Link"
 
 ### Installation
 
- - Unzip the zip file in `app/code/Pagespeedfr`
+ - Unzip the zip file in `app/code/Pagespeedfr/CmsAcf/`
  - Enable the module by running `php bin/magento module:enable Pagespeedfr_CmsAcf`
  - Apply database updates by running `php bin/magento setup:upgrade`\*
  - Flush the cache by running `php bin/magento cache:flush`
