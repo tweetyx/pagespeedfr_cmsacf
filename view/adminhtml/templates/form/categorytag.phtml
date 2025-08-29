@@ -1,0 +1,14 @@
+ <?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$acfCollection = $objectManager->create('Pagespeedfr\CmsAcf\Model\ResourceModel\Acf\Collection');
+$collection  = array_unique($acfCollection->getColumnValues('category'));
+ 
+?>
+<input type="text" id="category" name="category" list="categorylist" multiple class="w-5/6 text-base"> 
+<?php if(!empty($collection)): ?>
+<datalist id="categorylist">
+<?php foreach($collection as $item): ?>
+  <option value="<?php echo $item; ?>"></option> 
+<?php endforeach; ?>
+</datalist>
+<?php endif; ?>

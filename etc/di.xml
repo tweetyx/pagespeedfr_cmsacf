@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Pagespeedfr\CmsAcf\Api\AcfManagementInterface" type="Pagespeedfr\CmsAcf\Model\AcfManagement"/>
+    <preference for="Pagespeedfr\CmsAcf\Api\AcfRepositoryInterface" type="Pagespeedfr\CmsAcf\Model\AcfRepository"/>
+    <preference for="Pagespeedfr\CmsAcf\Api\Data\AcfInterface" type="Pagespeedfr\CmsAcf\Model\Acf"/>
+    <preference for="Pagespeedfr\CmsAcf\Api\Data\AcfSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+
+    <type name="Pagespeedfr\CmsAcf\Block\Adminhtml\HyvaForm">
+        <arguments>
+            <argument name="formTemplate" xsi:type="string">Pagespeedfr_CmsAcf::form/form.phtml</argument>
+        </arguments>
+    </type>
+</config>

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<grid xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Hyva_Admin:etc/hyva-grid.xsd">
+    <source>
+        <collection>\Pagespeedfr\CmsAcf\Model\ResourceModel\Acf\Collection</collection>
+    </source>
+    <columns >
+        <include keepAllSourceColumns="true">
+            <column name="category" />
+            <column name="acftype" label="type" source="\Pagespeedfr\CmsAcf\Model\Entity\Acftype" />
+            <column name="content" renderAsUnsecureHtml="true" label="Content primary" template="Pagespeedfr_CmsAcf::grid/content.phtml"/>
+            <column name="content_secondary" renderAsUnsecureHtml="true" label="Content secondary"/>
+            <column name="active" type="select" source="\Magento\Config\Model\Config\Source\Yesno" />
+            <column name="id" label="Edit" template="Pagespeedfr_CmsAcf::grid/editid.phtml"/>
+		</include>
+    </columns>
+    <actions idColumn="id">
+        <action id="delete" label="Delete"  url="*/*/delete"/>
+    </actions> 
+    <navigation>
+        <filters>
+            <filter column="category"/>
+            <filter column="content"/>
+            <filter column="content_secondary"/>
+            <filter column="active"/>
+        </filters>
+    </navigation>
+</grid>

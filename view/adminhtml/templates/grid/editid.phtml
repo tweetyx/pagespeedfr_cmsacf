@@ -1,0 +1,12 @@
+<?php declare(strict_types=1);
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaGrid\CellInterface $cell */
+$cell = $block->getData('cell');
+$key = $cell->getColumnDefinition()->getKey();
+$labelCell = $cell->getRow()->getCell($key . '_label');   
+
+//print_r($cell->getRow()->getCell('id')->getTextValue());
+?>
+ <a href="#" class="" title="edit" x-on:click="loadacfinfrom('<?php echo $cell->getTextValue(); ?>');return false;">edit</a> 

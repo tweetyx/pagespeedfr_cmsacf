@@ -1,0 +1,376 @@
+<?php declare(strict_types=1);
+
+/** @var \Hyva\Admin\Block\Adminhtml\HyvaForm $block */
+/** @var \Magento\Framework\Escaper $escaper */
+
+$escaper = $escaper ?? $block;
+
+$form       = $block->getForm();
+$uniqueId   = '_' . md5($form->getFormName());
+$navigation = $form->getNavigation();
+$buttons    = $navigation->getButtons();
+$formKey = \Magento\Framework\App\ObjectManager::getInstance()
+    ->get(\Magento\Framework\Data\Form\FormKey::class)
+    ->getFormKey();
+    $saveUrl = $block->getUrl('cmsacf/acf/save');
+    $ajaxUrl = $block->getUrl('cmsacf/acf/load');
+    $deleteUrl = $block->getUrl('cmsacf/acf/delete');
+   
+    $formName = $escaper->escapeHtml($form->getFormName());
+?>
+<script>
+    function init_form_<?= $uniqueId ?>() {
+        return {
+            activeSection: '<?= $form->getDefaultActiveSectionId() ?>',
+            activeGroups: <?= json_encode($form -> getDefaultActiveGroupsMap()) ?>,
+            isActiveGroup: function (section, group) {
+                return this.activeGroups[section] === group;
+            }
+        }
+    }
+</script>
+<!-- ACF form "<?= $formName  ?>" -->
+<form method="POST" action="<?php  echo  $saveUrl; ?>" x-data="init_form_<?= $uniqueId ?>()"
+    id="<?= $formName  ?>">
+    <input form="<?= $formName  ?>" name="form_key" type="hidden" value="<?= $formKey ?>" />
+    <input form="<?= $formName  ?>" name="id" id="acfid" type="hidden" value="" />
+    <div class="hyva-admin-form">
+        <div class="max-w-full px-0 py-6 mx-auto">
+            <div class="flex ml-auto justify-end gap-4">
+                <button type="button" class="flex px-4 py-2 rounded" onclick="resetForm()">
+                    Reset
+                </button>
+                <button type="button" class="flex  px-4 py-2 rounded" onclick="submitForm()">
+                    Save
+                </button>
+            </div>
+            <div>
+                <?php foreach ($navigation->getButtons() as $button): ?>
+                <?= $button->getHtml() ?>
+                <?php endforeach; ?>
+            </div>
+
+            <div class="flex flex-col md:flex-row">
+                <?php if ($form->hasDeclaredSections()): ?>
+                <div class="w-screen max-w-sm mr-10">
+                    <?php foreach ($form->getSections() as $section): ?>
+                    <div class="border border-gray-400 -mb-px py-2 px-10 text-center cursor-pointer"
+                        @click="activeSection = '<?= $section->getId() ?>'"
+                        x-bind:class="{ 'font-bold': activeSection === '<?= $section->getId() ?>' }">
+                        <?= $escaper->escapeHtml($section->getLabel()) ?>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
+
+                <div class="flex-grow">
+                    <?php foreach ($form->getSections() as $section): ?>
+                    <div class="section-<?= $section->getId() ?>" id="reload-<?= $section->getId() ?>"
+                        :class="activeSection === '<?= $section->getId()?>' ? 'active' : 'hidden'"
+                        x-show="activeSection === '<?= $section->getId()?>'">
+                        <?= $section->getHtml() ?>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+ 
+<script>
+    require([
+    'jquery',
+    'mage/url',
+    'Magento_Ui/js/modal/alert'
+], function ($, urlBuilder, alert) {
+    'use strict';
+
+    $(document).ready(function() {
+        $('#content_file').on('change', function() {
+            var fileInput = this;
+            var file = fileInput.files[0];
+            
+            if (file) {
+                uploadFile(file);
+            }
+        });
+    });
+
+    function uploadFile(file) {
+        var formData = new FormData();
+        formData.append('content_file', file);
+        formData.append('form_key', window.FORM_KEY);
+
+        // Afficher un loader (optionnel)
+        $('body').trigger('processStart');
+
+        $.ajax({
+            url: '<?php echo $block->getUrl('cmsacf/acf/file'); ?>', // Votre URL d'upload
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            success: function(response) {
+                $('body').trigger('processStop');
+                
+                if (response.success) {
+                    // Succès - vous pouvez stocker le nom du fichier dans un input hidden
+                    $('#uploaded_file_name').val(response.filename);
+                    $('#content_file_hidden').val(response.filename);
+                    
+                    
+                    alert({
+                        title: 'Succès',
+                        content: 'Fichier uploadé avec succès: ' + response.filename
+                    });
+                } else {
+                    alert({
+                        title: 'Erreur',
+                        content: response.message || 'Erreur lors de l\'upload'
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                $('body').trigger('processStop');
+                alert({
+                    title: 'Erreur',
+                    content: 'Erreur lors de l\'upload: ' + error
+                });
+            }
+        });
+    }
+});</script>
+<script>
+    const acftype = document.getElementById('acftype');
+
+    acftype.onchange = function () {
+        const selectedValue = this.value;
+        // Cacher tous les champs d'abord
+        const prefixes = ['content_text', 'content_link', 'content_image', 'content_file'];
+
+        prefixes.forEach(prefix => {
+            hideFieldsByPrefix(prefix);
+        });
+
+        // Afficher les champs selon le type sélectionné
+        switch (selectedValue) {
+            case '0': // Text
+                showFieldsByPrefix('content_text');
+                break;
+            case '1': // Link
+                showFieldsByPrefix('content_link');
+                break;
+            case '2': // Image
+                showFieldsByPrefix('content_image');
+                break;
+            case '3': // File
+                showFieldsByPrefix('content_file');
+                break;
+            default:
+                // Aucun champ affiché par défaut
+                break;
+        }
+    };
+
+
+    // Fonction pour afficher les champs avec un préfixe donné
+    function showFieldsByPrefix(prefix) {
+        // Chercher tous les éléments dont l'id commence par le préfixe
+        const elements = document.querySelectorAll(`[id^="${prefix}"]`);
+
+        elements.forEach(element => {
+            element.style.display = '';
+
+            // Afficher la div parent de l'élément
+            if (element.parentElement) {
+                element.parentElement.style.display = '';
+            }
+        });
+
+        // Chercher et afficher les labels avec attribut 'for' qui commence par le préfixe
+        const labels = document.querySelectorAll(`label[for^="${prefix}"]`);
+        labels.forEach(label => {
+            label.style.display = '';
+
+            // Afficher la div parent du label
+            if (label.parentElement) {
+                label.parentElement.style.display = '';
+            }
+        });
+    }
+
+    // Fonction pour cacher les champs avec un préfixe donné
+    function hideFieldsByPrefix(prefix) {
+        const elements = document.querySelectorAll(`[id^="${prefix}"]`);
+
+        elements.forEach(element => {
+            element.style.display = 'none';
+
+            // Cacher la div parent de l'élément
+            if (element.parentElement) {
+                element.parentElement.style.display = 'none';
+            }
+        });
+
+        // Chercher et cacher les labels avec attribut 'for' qui commence par le préfixe
+        const labels = document.querySelectorAll(`label[for^="${prefix}"]`);
+        labels.forEach(label => {
+            label.style.display = 'none';
+
+            // Cacher la div parent du label
+            if (label.parentElement) {
+                label.parentElement.style.display = 'none';
+            }
+        });
+    }
+
+    // Initialiser l'état au chargement de la page
+    document.addEventListener('DOMContentLoaded', function () {
+        // Déclencher l'événement change pour initialiser l'affichage
+        if (acftype.value) {
+            acftype.dispatchEvent(new Event('change'));
+        }
+    });
+</script>
+<script>
+    function submitForm() {
+        // On soumet le vrai formulaire
+        document.getElementById('<?= $formName  ?>').submit();
+    }
+    function resetForm() {
+        // On soumet le vrai formulaire
+        const labels = document.getElementById('<?= $formName  ?>').querySelectorAll(`input`);
+        labels.forEach(label => {
+            label.value = '';
+        });
+        const textareas = document.getElementById('<?= $formName  ?>').querySelectorAll(`textarea`);
+        textareas.forEach(label => {
+            label.value = '';
+        });
+        return;
+    }
+
+    // Fonction JavaScript pour delete les données ACF via AJAX
+    function deleteacfinfrom(acfId) {
+        const formContainer = document.querySelector('#<?= $formName  ?>');
+
+        // Construire l'URL avec les paramètres GET
+        const url = new URL('<?php echo  $deleteUrl; ?>');
+        url.searchParams.append('acf_id', acfId);
+        url.searchParams.append('form_key', '<?php echo $formKey ?>');
+        url.searchParams.append('isAjax', 'true');
+
+        // Requête AJAX en GET
+        fetch(url.toString(), {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+    }
+    // Fonction JavaScript pour charger les données ACF via AJAX
+    function loadacfinfrom(acfId) {
+        // Afficher un loader pendant le chargement
+        const formContainer = document.querySelector('#<?= $formName  ?>');
+
+        // Construire l'URL avec les paramètres GET
+        const url = new URL('<?php echo  $ajaxUrl; ?>');
+        url.searchParams.append('acf_id', acfId);
+        url.searchParams.append('form_key', '<?php echo $formKey ?>');
+        url.searchParams.append('isAjax', 'true');
+
+        // Requête AJAX en GET
+        fetch(url.toString(), {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Recharger le contenu du formulaire
+                    var data = data.acf_data;
+                    if (formContainer) {
+                        var dropdownacftype = document.getElementById('acftype');
+                        dropdownacftype.value = data.acftype;
+                        const changeEvent = new Event('change', { bubbles: true });
+                        dropdownacftype.dispatchEvent(changeEvent);
+
+                        document.getElementById('category').value = data.category || '';
+                        document.getElementById('acfid').value = data.id || '';
+
+                        switch (data.acftype) {
+                            case "0":
+                                // Type texte simple
+                                document.getElementById('content_text').value = data.content || '';
+                                break;
+
+                            case "1":
+                                // Type lien
+                                document.getElementById('content_link_text').value = data.content || '';
+                                document.getElementById('content_link_url').value = data.content_secondary || '';
+                                break;
+
+                            case "2":
+                                // Type image
+                                document.getElementById('content_image').value = data.content || '';
+                                document.getElementById('content_image_alt').value = data.content_secondary || '';
+                                break;
+
+                            case "3":
+                                // Type fichier
+                                document.getElementById('content_file_hidden').value = data.content || '';
+                                document.getElementById('content_file_hidden').style.display = "block";
+                                document.getElementById('content_file_text').value = data.content_secondary || '';
+                                break;
+
+                            default:
+                                console.warn('Type ACF non reconnu:', data.acftype);
+                        }
+                    }
+                } else {
+                    // Afficher l'erreur
+                    showNotification('error', data.message || 'Erreur lors du chargement des données ACF');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('error', 'Erreur lors de la requête AJAX');
+            })
+            .finally(() => {
+                // Retirer le loader
+                if (formContainer) {
+                    formContainer.classList.remove('loading');
+                    const loader = formContainer.querySelector('.admin__data-grid-loading-mask');
+                    if (loader) {
+                        loader.remove();
+                    }
+                }
+            });
+    }
+
+    // Fonction utilitaire pour afficher les notifications
+    function showNotification(type, message) {
+        // Utiliser le système de notification de Magento
+        return;
+        if (window.require) {
+            require(['Magento_Ui/js/modal/alert'], function (alert) {
+                alert({
+                    title: type === 'success' ? 'Succès' : 'Erreur',
+                    content: message,
+                    modalClass: 'confirm _has-header'
+                });
+            });
+        } else {
+            // Fallback simple
+            alert(message);
+        }
+    }
+</script>

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Pagespeedfr_CmsAcf:etc/hyva-form.xsd">
+    <save method="\Pagespeedfr\CmsAcf\Api\AcfRepositoryInterface::save">
+        <bindArguments>
+            <argument name="id" formData="true"/>
+        </bindArguments>
+    </save>
+    <load method="\Pagespeedfr\CmsAcf\Api\AcfRepositoryInterface::get">
+        <bindArguments>
+            <argument name="id" requestParam="id"/>
+        </bindArguments>
+    </load>
+    <navigation>
+        <buttons>
+            <!-- <button id="save" label="Save" url="cmsacf/acf/save" enabled="false" /> -->
+            <!-- <button id="only-visible-when-entity-was-loaded" label="Example" hiddenForNewEntity="true"/> -->
+            <!-- <button id="reset" label="Reset" url="*/*/*"/> -->
+            <!-- <button id="validate">
+                <event on="click"/>
+            </button> -->
+        </buttons>
+    </navigation>
+    <fields>
+        <field name="id" hidden="true"/>
+        <field name="category" label="Tag" template="Pagespeedfr_CmsAcf::form/categorytag.phtml"/>
+        <field name="active" type="select" source="\Magento\Config\Model\Config\Source\Yesno" />
+        <field name="acftype" type="select" label="Type" source="\Pagespeedfr\CmsAcf\Model\Entity\Acftype" />
+        <field name="content_text" type="textarea" />
+        <field name="content_link_text" />
+        <field name="content_link_url" />
+        <field name="content_image" label="Image" template="Pagespeedfr_CmsAcf::form/imageupload.phtml" />
+        <field name="content_image_alt" label="Alt image" />
+        <field name="content_file" label="File" template="Pagespeedfr_CmsAcf::form/fileupload.phtml" />
+        <field name="content_file_text" label="Text file" />
+        <field name="content" disabled="true" hidden="true"/>
+        <field name="content_secondary" disabled="true" hidden="true"/>
+    </fields>
+</form>

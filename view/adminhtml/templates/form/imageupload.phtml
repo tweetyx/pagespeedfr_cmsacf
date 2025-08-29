@@ -1,0 +1,30 @@
+<?php 
+$field = 'content_image';
+?>
+<input type="text" name="<?php echo $field; ?>" id="<?php echo $field; ?>" class="admin__control-text"
+    readonly="readonly" />
+<button type="button" class="action-default scalable btn-chooser" id="choose-image-btn">
+    <span>
+        <?= __('Choose Image') ?>
+    </span>
+</button>
+<div class="file-uploader-preview" style="display:none"><a target="_blank" href=""><img class="preview-image"
+            tabindex="0" src=""></a>
+    <div class="actions"><button type="button" class="action-remove"><span>Delete image</span></button></div>
+</div>
+<script type="text/javascript">
+    require([
+        'jquery',
+        'mage/adminhtml/browser'
+    ], function ($) {
+        $(document).ready(function () {
+            $('#choose-image-btn').click(function () {
+                var targetElementId = '<?php echo $field; ?>';
+                var baseUrl = '<?= $this->getUrl('cms/wysiwyg_images/index') ?>';
+                var url = baseUrl + 'target_element_id/' + targetElementId + '/';
+
+                MediabrowserUtility.openDialog(url);
+            });
+        });
+    });
+</script>

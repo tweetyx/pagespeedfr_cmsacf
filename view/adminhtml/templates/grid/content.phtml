@@ -1,0 +1,25 @@
+<?php declare(strict_types=1);
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Hyva\Admin\ViewModel\HyvaGrid\CellInterface $cell */
+$cell = $block->getData('cell');
+$key = $cell->getColumnDefinition()->getKey();
+$fieldValue = $escaper->escapeHtmlAttr($cell->getTextValue());
+if($typeswitch = $cell->getRow()->getCell('acftype')->getTextValue()):
+?>
+  <?php if($typeswitch == "Image"): ?>
+        <a href="<?= $fieldValue ?>" target="_blank">
+            <img src="<?= $fieldValue ?>" width="85" />
+        </a>
+    <?php elseif($typeswitch == "File"): ?>
+        <a href="<?= $fieldValue ?>" class="font-medium text-blue-800 hover:text-blue-600"
+            target="_blank">
+            <?= $fieldValue ?>
+        </a>
+    <?php else: ?>
+        <?= $fieldValue ?>
+    <?php endif; ?>
+<?php else: ?>
+    <?= $fieldValue ?>
+<?php endif; ?>

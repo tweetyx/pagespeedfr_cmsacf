@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+	<route url="/V1/pagespeedfr-cmsacf/acf" method="GET">
+		<service class="Pagespeedfr\CmsAcf\Api\AcfManagementInterface" method="getAcf"/>
+		<resources>
+			<resource ref="anonymous"/>
+		</resources>
+	</route>
+	<route url="/V1/pagespeedfr-cmsacf/acf" method="POST">
+		<service class="Pagespeedfr\CmsAcf\Api\AcfRepositoryInterface" method="save"/>
+		<resources>
+			<resource ref="Pagespeedfr_CmsAcf::Acf_save"/>
+		</resources>
+	</route>
+	<route url="/V1/pagespeedfr-cmsacf/acf/search" method="GET">
+		<service class="Pagespeedfr\CmsAcf\Api\AcfRepositoryInterface" method="getList"/>
+		<resources>
+			<resource ref="Pagespeedfr_CmsAcf::Acf_view"/>
+		</resources>
+	</route>
+	<route url="/V1/pagespeedfr-cmsacf/acf/:acfId" method="GET">
+		<service class="Pagespeedfr\CmsAcf\Api\AcfRepositoryInterface" method="get"/>
+		<resources>
+			<resource ref="Pagespeedfr_CmsAcf::Acf_view"/>
+		</resources>
+	</route>
+	<route url="/V1/pagespeedfr-cmsacf/acf/:acfId" method="PUT">
+		<service class="Pagespeedfr\CmsAcf\Api\AcfRepositoryInterface" method="save"/>
+		<resources>
+			<resource ref="Pagespeedfr_CmsAcf::Acf_update"/>
+		</resources>
+	</route>
+	<route url="/V1/pagespeedfr-cmsacf/acf/:acfId" method="DELETE">
+		<service class="Pagespeedfr\CmsAcf\Api\AcfRepositoryInterface" method="deleteById"/>
+		<resources>
+			<resource ref="Pagespeedfr_CmsAcf::Acf_delete"/>
+		</resources>
+	</route>
+</routes>

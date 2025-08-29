@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Pagespeedfr_CmsAcf::acf_form" title="Hyvä ACF Form" translate="title" module="Pagespeedfr_CmsAcf"
+             parent="Magento_Backend::content_elements"
+             sortOrder="50" dependsOnModule="Pagespeedfr_CmsAcf" resource="Pagespeedfr_CmsAcf::Acf_view"
+             action="cmsacf/acf/form"/>
+    </menu>
+</config>
