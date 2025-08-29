@@ -76,6 +76,10 @@ and put in app\code\Hyva\Admin\view\adminhtml\templates\form\field\input my app\
 
 Go in Content > Element > Hyvä Acf Form
  All good
+
+ If you haven't my table on setup:upgrade, do this
+php bin/magento setup:db-declaration:generate-whitelist --module-name=Pagespeedfr_CmsAcf
+and again setup:upgrade
  
 
 
